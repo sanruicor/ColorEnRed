@@ -15,11 +15,7 @@ public class PlayerController : NetworkBehaviour
     };
 
     // NetworkVariable sincroniza a cor en todos os clientes automaticamente
-    private NetworkVariable<int> m_ColorIndex = new NetworkVariable<int>(
-        0,
-        NetworkVariableReadPermission.Everyone,
-        NetworkVariableWritePermission.Server
-    );
+    private NetworkVariable<int> m_ColorIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     private Renderer m_Renderer;
 
