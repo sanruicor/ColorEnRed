@@ -51,6 +51,7 @@ TemporaryDependencyNodeTargetIdentifier=netstandard2.1
 
 [sourceFiles]
 Assets/Scripts/
+ ColorRegistry.cs
  GameManager.cs
  PlayerController.cs
 Assets/TutorialInfo/Scripts/Readme.cs

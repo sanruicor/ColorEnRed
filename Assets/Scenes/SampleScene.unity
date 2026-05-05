@@ -268,6 +268,7 @@ GameObject:
   - component: {fileID: 396625395}
   - component: {fileID: 396625399}
   - component: {fileID: 396625398}
+  - component: {fileID: 396625400}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -373,6 +374,18 @@ MonoBehaviour:
     OldPrefabList: []
   RunInBackground: 1
   LogLevel: 1
+--- !u!114 &396625400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 396625394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f8c0744b0b64349a9b318525d91f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class PlayerController : NetworkBehaviour
 {
-    // As 6 cores predefinidas
-    private static readonly Color[] PredefinedColors = new Color[]
+    public static readonly Color[] PredefinedColors = new Color[]
     {
         Color.red,
         Color.blue,
@@ -14,8 +13,7 @@ public class PlayerController : NetworkBehaviour
         Color.magenta
     };
 
-    // NetworkVariable sincroniza a cor en todos os clientes automaticamente
-    private NetworkVariable<int> m_ColorIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    private NetworkVariable<int> m_ColorIndex = new NetworkVariable<int>( -1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     private Renderer m_Renderer;
 
@@ -26,26 +24,30 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        // Subscribirse aos cambios de cor para actualizar o material
         m_ColorIndex.OnValueChanged += OnColorChanged;
 
         if (IsServer)
         {
-            // O servidor asigna posición e cor aleatorias ao spawnear
             transform.position = GetRandomPosition();
-            m_ColorIndex.Value = Random.Range(0, PredefinedColors.Length);
+            // Pedir cor única ao rexistro
+            int assignedColor = ColorRegistry.Instance.AssignColor(OwnerClientId);
+            if (assignedColor >= 0)
+                m_ColorIndex.Value = assignedColor;
         }
 
-        // Aplicar a cor actual (importante para clientes que se conectan tarde)
-        ApplyColor(m_ColorIndex.Value);
+        if (m_ColorIndex.Value >= 0)
+            ApplyColor(m_ColorIndex.Value);
     }
 
     public override void OnNetworkDespawn()
     {
         m_ColorIndex.OnValueChanged -= OnColorChanged;
+
+        // Liberar a cor ao desconectarse (só no servidor)
+        if (IsServer)
+            ColorRegistry.Instance.ReleaseColor(OwnerClientId);
     }
 
-    // Chamado dende GameManager cando o xogador local preme o botón
     public void RequestColorChange()
     {
         ChangeColorRpc();
@@ -54,12 +56,16 @@ public class PlayerController : NetworkBehaviour
     [Rpc(SendTo.Server)]
     private void ChangeColorRpc()
     {
-        m_ColorIndex.Value = Random.Range(0, PredefinedColors.Length);
+        // Pedir unha cor libre diferente á actual
+        int newColor = ColorRegistry.Instance.ChangeColor(OwnerClientId);
+        if (newColor >= 0)
+            m_ColorIndex.Value = newColor;
     }
 
     private void OnColorChanged(int oldIndex, int newIndex)
     {
-        ApplyColor(newIndex);
+        if (newIndex >= 0)
+            ApplyColor(newIndex);
     }
 
     private void ApplyColor(int index)
